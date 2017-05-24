@@ -1,0 +1,167 @@
+\documentclass[twoside,11pt]{article}\usepackage{amsmath,amsfonts,amsthm,fullpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\setlength{\parindent}{0pt}
+\usepackage{graphicx}
+\usepackage{bm}
+\def\argmin{\operatornamewithlimits{arg\, min}}
+\newcommand{\rbr}[1]{\left(#1\right)}
+\newcommand{\cbr}[1]{\left\{#1\right\}}
+\newcommand{\Ncal}{\mathcal{N}}
+\begin{document}
+
+\title{Document Search using low rank approximation of TFIDF document representation}
+\author{Ajay DSouza}
+\maketitle
+
+\section{Method}
+\begin{gather}
+A \in \mathbf{R}^{m\times n}\text{,is the term-document matrix}\nonumber\\
+A=U\Sigma V^T\nonumber\\
+\text{Where, $\Sigma$ is the diagonal matrix with singular values $\sigma_1..\sigma_r$},\nonumber\\
+\text{where $r$ is the rank of the matrix}\nonumber\\
+\mathbf{Rank}(A)=r\nonumber\\
+\text{Get a low rank approximation $A_k$ with }\mathbf{Rank}(A_k)=k
+\text{ for } A\nonumber\\
+\text{Set }\sigma_i=0 \;for\; i > k \text{ such that it minimizes  }||A-A_k||_F\nonumber\\
+\text{Now, we can express the SVD with the lower rank $\Sigma_k$, as }\nonumber\\
+A_k=U^{m\times k} \Sigma_k^{k\times k}  {V^T}^{k\times n} \nonumber\\
+\text{Thus we have the low rank matrix as}\nonumber\\
+A_k \in \mathbf{R}^{m\times n}\nonumber\\
+\text{If ${A_k}_{(i,j)}=0 \;\;\forall i> l \;and\; \forall j \in 1\to n $, we can remove those rows from $A_k$ and represent it as a $l \times n$ matrix }\nonumber\\
+\text{The query vector Q can be mapped to the new space using the following transformation}\nonumber\\
+q_k = {\Sigma_k}^{-1} U_k^T Q\nonumber\\
+\text{Then the proximity of the query to each of the document can be got from the $\cos \theta$ of the angle between them as}\nonumber\\
+\cos \theta = \frac{q_k^T.{A_k}_{(j)}}{||q_k^T||||{A_k}_{(j)}||}\;where\;{A_k}_{(j)}\text{ is each column vector in $A_k$}\nonumber
+\end{gather}
+
+$\\\\$
+
+\section{Project File Organization}
+
+\subsection{Source code files}
+Document search project is implemented in the following files in matlab
+\begin{verbatim}
+$ ls -l *.m
+-rwx------ 1 ajdsouza mkpasswd 2867 Apr 24 23:14 genlowranktd.m
+-rwx------ 1 ajdsouza mkpasswd 3106 Apr 24 00:58 jacobi.m
+-rwx------ 1 ajdsouza mkpasswd 2022 Apr 24 19:38 qrpivotingg.m
+-rwx------ 1 ajdsouza mkpasswd 2068 Apr 24 23:46 vecquery.m
+\end{verbatim}
+
+\subsection{Data Files Used}
+Files containing the generated tfidf matrix, the document Index and the term index generated from the documents taken from news articles on the CNN web site.
+$\\\\$
+matlab, matfiles used to store the SVD, and $5$ low rank approximations of the term document matrix and used for the subsequent search
+\begin{verbatim}
+$ ls -l
+total 13236
+-rwx------ 1 ajdsouza mkpasswd 3923102 Apr 24 23:15 docsearchmat.mat
+-rwx------ 1 ajdsouza mkpasswd    5924 Apr 24 22:07 documentIndex.txt
+-rwx------ 1 ajdsouza mkpasswd  334982 Apr 24 23:15 rankApprox_1.mat
+-rwx------ 1 ajdsouza mkpasswd  418681 Apr 24 23:15 rankApprox_2.mat
+-rwx------ 1 ajdsouza mkpasswd  837873 Apr 24 23:15 rankApprox_3.mat
+-rwx------ 1 ajdsouza mkpasswd 1721307 Apr 24 23:15 rankApprox_4.mat
+-rwx------ 1 ajdsouza mkpasswd 3441952 Apr 24 23:15 rankApprox_5.mat
+-rwx------ 1 ajdsouza mkpasswd 2788352 Apr 24 20:05 termDocumentMatrix.txt
+-rwx------ 1 ajdsouza mkpasswd   64516 Apr 24 21:54 termIndex.txt
+\end{verbatim}
+
+$\\$
+\section{Results}
+The following are the results of some of the queries we executed
+\begin{verbatim}
+EDU>> vecquery
+Enter the string to search (e.g. tripoli peopl hide gadhafi ) :
+ghadafi
+Searching documents fro query string ghadafi
+===================================================
+Searching through term doc matrix with rank 8
+Closest matching DocNo=28 _document11088.txt 
+===================================================
+Searching through term doc matrix with rank 10
+Closest matching DocNo=28 _document11088.txt 
+===================================================
+Searching through term doc matrix with rank 20
+Closest matching DocNo=84 _document5350.txt 
+===================================================
+Searching through term doc matrix with rank 41
+Closest matching DocNo=64 _document5015.txt 
+===================================================
+Searching through term doc matrix with rank 82
+Closest matching DocNo=64 _document5015.txt 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> vecquery
+Enter the string to search (e.g. tripoli peopl hide gadhafi ) :
+georg zimmerman claim fire defenc
+Searching documents fro query string georg zimmerman claim fire defenc
+===================================================
+Searching through term doc matrix with rank 8
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 10
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 20
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 41
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 82
+Closest matching DocNo=93 _document509.txt 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> vecquery
+Enter the string to search (e.g. tripoli peopl hide gadhafi ) :
+georg zimmerman claim fire defenc
+Searching documents fro query string georg zimmerman claim fire defenc
+===================================================
+Searching through term doc matrix with rank 8
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 10
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 20
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 41
+Closest matching DocNo=93 _document509.txt 
+===================================================
+Searching through term doc matrix with rank 82
+Closest matching DocNo=93 _document509.txt 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> 
+EDU>> vecquery
+Enter the string to search (e.g. tripoli peopl hide gadhafi ) :
+tripoli peopl hide moammar
+Searching documents fro query string tripoli peopl hide moammar
+===================================================
+Searching through term doc matrix with rank 8
+Closest matching DocNo=31 _document5053.txt 
+===================================================
+Searching through term doc matrix with rank 10
+Closest matching DocNo=31 _document5053.txt 
+===================================================
+Searching through term doc matrix with rank 20
+Closest matching DocNo=31 _document5053.txt 
+===================================================
+Searching through term doc matrix with rank 41
+Closest matching DocNo=12 _document5950.txt 
+===================================================
+Searching through term doc matrix with rank 82
+Closest matching DocNo=12 _document5950.txt 
+EDU>> 
+EDU>> 
+EDU>> 
+\end{verbatim}
+\end{document}
